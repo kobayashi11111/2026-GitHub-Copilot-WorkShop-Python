@@ -21,7 +21,7 @@ class GamificationManager:
             try:
                 with open(self.data_file, 'r', encoding='utf-8') as f:
                     return json.load(f)
-            except:
+            except (json.JSONDecodeError, IOError, OSError):
                 return self._create_default_data()
         return self._create_default_data()
     
@@ -192,11 +192,16 @@ class GamificationManager:
             date = session["date"]
             daily_counts[date] = daily_counts.get(date, 0) + 1
         
+        # 経過日数を計算（最低1日）
+        days_elapsed = max(1, (today - start_date).days)
+        if days_elapsed == 0:
+            days_elapsed = 1
+        
         return {
             "period": period,
             "total_sessions": total_sessions,
             "total_minutes": total_minutes,
-            "average_per_day": total_sessions / max(1, (today - start_date).days),
+            "average_per_day": total_sessions / days_elapsed,
             "daily_counts": daily_counts,
             "current_streak": self.data["current_streak"],
             "best_streak": self.data["best_streak"]
