@@ -177,9 +177,17 @@ class TestConcurrentScenarios:
     def test_data_race_condition_simulation(self, temp_data_file):
         """データ競合状態のシミュレーション
         
-        Note: この簡易テストは実際の競合状態を完全に再現するものではありません。
-        実際の並行アクセスでは、最後に保存されたインスタンスのデータが反映されます。
-        このテストは、基本的なデータ整合性を確認するものです。
+        このテストは、複数のインスタンスが順次同じファイルに書き込む場合の
+        基本的なデータ整合性を検証します。実際の並行書き込みではなく、
+        順次書き込みの動作を確認します。
+        
+        検証内容:
+        - 複数インスタンスが同じファイルを読み書きできる
+        - 最後に保存されたデータが正しく反映される
+        - データファイルの破損が起こらない
+        
+        Note: 真の並行実行（スレッド/プロセス間の競合）はテストしていません。
+        完全な並行性テストには、マルチスレッド/マルチプロセスの実装が必要です。
         """
         # 初期データを作成
         gm1 = GamificationManager(data_file=temp_data_file)
@@ -345,17 +353,25 @@ class TestComplexScenarios:
     def test_long_term_usage_simulation(self, temp_data_file):
         """長期使用のシミュレーション
         
-        Note: この実装では実際の日付進行をシミュレートできないため、
-        ストリークの検証は制限されます。実際の使用では日付が自動的に進むため、
-        ここでは主に回数バッジとレベルアップロジックを検証します。
+        検証内容:
+        - 大量のポモドーロ（300回）の処理が正しく動作する
+        - XP計算とレベルアップロジックが正確に機能する
+        - 回数バッジが正しく獲得される
+        
+        制限事項:
+        この実装では実際の日付進行をシミュレートできないため、
+        ストリークの検証は制限されます。すべてのポモドーロが同日に実行されるため、
+        ストリークは1のままになります。実際の使用では日付が自動的に進むため、
+        この動作は想定内です。
+        
+        Note: 実際の日付進行を伴うストリーク機能のテストは、
+        TestStreakSystemクラスで個別に検証されています。
         """
         gm = GamificationManager(data_file=temp_data_file)
         
-        # 100日間の使用をシミュレート（実際には同日に実行）
-        for day in range(100):
-            # 1日3回のポモドーロ
-            for _ in range(3):
-                gm.add_pomodoro(25)
+        # 300回のポモドーロを実行（実際には同日に実行）
+        for _ in range(300):
+            gm.add_pomodoro(25)
         
         # 結果を確認
         assert gm.data['total_pomodoros'] == 300
@@ -364,7 +380,7 @@ class TestComplexScenarios:
         
         # 回数バッジは正しく獲得される
         assert 'count_250' in gm.data['badges']
-        # ストリークは同日実行のため1のまま（これは制限事項）
+        # ストリークは同日実行のため1のまま（これは想定内の動作）
         assert gm.data['current_streak'] == 1
     
     def test_mixed_duration_pomodoros(self, temp_data_file):
