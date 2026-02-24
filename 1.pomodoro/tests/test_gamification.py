@@ -523,13 +523,21 @@ class TestEdgeCases:
         assert gm.data["total_pomodoros"] == 1
     
     def test_negative_duration_pomodoro(self, temp_data_file):
-        """負の時間のポモドーロのテスト"""
+        """負の時間のポモドーロのテスト
+        
+        Note: これは既知の制限事項です。現在の実装では負の時間が許可されており、
+        負のXPが計算されます。本来は入力検証で防ぐべきですが、
+        このテストは現在の挙動を記録するためのものです。
+        """
         gm = GamificationManager(data_file=temp_data_file)
         result = gm.add_pomodoro(-25)
         
-        # 負のXPが計算される（バグの可能性）
+        # 現在の挙動: 負のXPが計算される
         assert result["xp_earned"] == -100
         assert gm.data["total_pomodoros"] == 1
+        
+        # TODO: 将来的には、gamification.pyのadd_pomodoroメソッドで
+        # 入力検証を追加して負の時間を拒否するべき
     
     def test_very_large_duration(self, temp_data_file):
         """非常に長い時間のポモドーロのテスト"""

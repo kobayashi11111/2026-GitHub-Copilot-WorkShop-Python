@@ -171,6 +171,8 @@ pytest tests/test_gamification.py::TestGamificationManagerBasics::test_initializ
 ## カバレッジレポート
 
 ### 現在のカバレッジ
+> **Note**: 以下の数値はPR作成時点のものです。コードの変更により変動する可能性があります。
+
 - **全体**: 85%
 - **gamification.py**: 99%
 - **app.py**: 74%

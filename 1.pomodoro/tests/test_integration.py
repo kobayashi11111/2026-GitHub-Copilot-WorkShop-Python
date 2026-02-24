@@ -175,7 +175,12 @@ class TestConcurrentScenarios:
         assert gm3.data['total_pomodoros'] == 2
     
     def test_data_race_condition_simulation(self, temp_data_file):
-        """データ競合状態のシミュレーション"""
+        """データ競合状態のシミュレーション
+        
+        Note: この簡易テストは実際の競合状態を完全に再現するものではありません。
+        実際の並行アクセスでは、最後に保存されたインスタンスのデータが反映されます。
+        このテストは、基本的なデータ整合性を確認するものです。
+        """
         # 初期データを作成
         gm1 = GamificationManager(data_file=temp_data_file)
         gm1.add_pomodoro(25)
@@ -338,17 +343,16 @@ class TestComplexScenarios:
         return str(tmp_path / "complex_test.json")
     
     def test_long_term_usage_simulation(self, temp_data_file):
-        """長期使用のシミュレーション"""
+        """長期使用のシミュレーション
+        
+        Note: この実装では実際の日付進行をシミュレートできないため、
+        ストリークの検証は制限されます。実際の使用では日付が自動的に進むため、
+        ここでは主に回数バッジとレベルアップロジックを検証します。
+        """
         gm = GamificationManager(data_file=temp_data_file)
         
-        # 100日間の使用をシミュレート
-        today = datetime.now().date()
-        
+        # 100日間の使用をシミュレート（実際には同日に実行）
         for day in range(100):
-            # 各日の前日を設定して連続日数を確保
-            if day > 0:
-                gm.data['last_completion_date'] = (today + timedelta(days=day - 1)).isoformat()
-            
             # 1日3回のポモドーロ
             for _ in range(3):
                 gm.add_pomodoro(25)
@@ -358,11 +362,10 @@ class TestComplexScenarios:
         assert gm.data['xp'] == 30000
         assert gm.data['level'] == 61  # 1 + floor(30000 / 500)
         
-        # 100日連続のストリークは手動で設定しないと達成できないため、
-        # ここでは回数バッジのみ確認
+        # 回数バッジは正しく獲得される
         assert 'count_250' in gm.data['badges']
-        # 実際のストリークは1（毎回同じ日付で更新されるため）
-        # 長期シミュレーションではストリークが正しく動作しないことを認識
+        # ストリークは同日実行のため1のまま（これは制限事項）
+        assert gm.data['current_streak'] == 1
     
     def test_mixed_duration_pomodoros(self, temp_data_file):
         """異なる時間のポモドーロの混在テスト"""
