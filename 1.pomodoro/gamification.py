@@ -20,7 +20,11 @@ class GamificationManager:
         if os.path.exists(self.data_file):
             try:
                 with open(self.data_file, 'r', encoding='utf-8') as f:
-                    return json.load(f)
+                    loaded_data = json.load(f)
+                    # デフォルトデータとマージして欠落フィールドを補完
+                    default_data = self._create_default_data()
+                    default_data.update(loaded_data)
+                    return default_data
             except (json.JSONDecodeError, IOError, OSError):
                 return self._create_default_data()
         return self._create_default_data()

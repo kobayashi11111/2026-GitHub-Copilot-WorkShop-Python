@@ -7,6 +7,12 @@ build/
 .pytest_cache/
 *.db
 
+# Test coverage
+htmlcov/
+.coverage
+coverage.xml
+.coverage.*
+
 # Node
 node_modules/
 
