@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ポモドーロタイマー</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ポモドーロタイマー</h1>
+        </header>
+        
+        <main>
+            <div class="timer-container">
+                <div class="status">作業中</div>
+                <div class="timer-display">
+                    <span id="timer">25:00</span>
+                </div>
+                <div class="controls">
+                    <button id="start-btn" class="btn btn-primary">開始</button>
+                    <button id="reset-btn" class="btn btn-secondary">リセット</button>
+                </div>
+            </div>
+            
+            <div class="stats-container">
+                <h2>今日の進捗</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="completed-count">0</div>
+                        <div class="stat-label">完了</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-time">0時間0分</div>
+                        <div class="stat-label">集中時間</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/timerEngine.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/uiController.js') }}"></script>
+</body>
+</html>
